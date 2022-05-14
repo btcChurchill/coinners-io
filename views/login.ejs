@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" href="/favicon.png" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Login | Coinners </title>
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <div class="main">
+      <h1>SIGN IN TO YOUR ACCOUNT</h1>
+      <% if (messages) { %>
+      <p><%= messages.error %></p>
+      <% } %>
+      <form action="/login" method="POST">
+        <input
+          type="email"
+          name="email"
+          placeholder="hello@gmail.com"
+        />
+        <input type="password" name="password" placeholder="* * * * * *" />
+        <button>SIGN IN</button>
+        <a href="/register">click here to register...</a>
+      </form>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,1686 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href='https://unpkg.com/boxicons@2.1.2/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="dash-board.css">
+    <link rel="icon" href="/favicon.png" />
+    <script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <title>Dashboard | Coinners</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400&display=swap');
+
+        * {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            
+        }
+
+        .popup {
+            width: 300px;
+            background: #fff;
+            border-radius: 6px;
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translate(-50%, -50%) scale(0.1);
+            text-align:center;
+            padding: 0 25px 25px;
+            color: #333;
+            visibility: hidden;
+            transition: transform 0.4s, top 0.4s;
+        }
+
+        .open-popup{ 
+            visibility: visible;
+            top: 50%;
+            transform: translate(-50%, -50%) scale(1);
+        }
+        .popup img {
+            width: 70px;
+            margin-top: -40px;
+            border-radius: 50%;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+
+        }
+
+        .popup h2 {
+            font-size: 30px;
+            font-weight: 500px;
+            margin: 25px 0 10px;
+        }
+
+        .popup button {
+            width: 100%;
+            margin-top: 45px;
+            padding: 10px 0;
+            background: #d11b1b;
+            color: #fff;
+            border: 0;
+            outline: none;
+            font-size: 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        }
+
+
+
+        :root {
+            --main-color: rgb(48, 48, 48);
+            --bg-color: rgb(31,31,31);
+            --wallet-color: rgb(150, 150, 150);
+        }
+
+        body {
+            position: relative;
+            font-family: 'Poppins', sans-serif;
+            height: 100%;
+        }
+
+        .sidebar img {
+            margin-top: -10px;
+            /* border: 2px solid red; */
+        }
+
+        .sidebar {
+            width: 85px;
+            background-color: var(--main-color);
+            height: 100vh;
+            position: fixed;
+        }
+
+        .sidebar.active {
+            width: 240px;
+        }
+
+        .logo_content {
+            height: 67px;
+            background-color: var(--bg-color);
+        }
+
+        .logo_content .logo {
+            color: #fff;
+            display: none;
+            background-color: var(--bg-color);
+            padding: 20px;
+        }
+
+        .logo_content .btn-toggle {
+            position: absolute;
+            color: whitesmoke;
+            right: 17px;
+            top: 7px;
+            font-size: 26px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .sidebar ul {
+            padding: 20px;
+
+        }
+
+        .sidebar ul li {
+            list-style: none;
+            margin-top: 10px;
+        } 
+
+        .sidebar ul li a {
+            color: #fff;
+            text-decoration: none;
+            display: flex;
+            font-size: 14px;
+            align-items: center;
+            padding: 10px;
+            transition: all .4s easy;
+        }
+
+        .sidebar ul li a:hover {
+            background-color: #fff;
+            color: rgb(20,20,20);
+            border-radius: 5px;
+
+        }
+
+        .sidebar ul li a i {
+            padding-right: 25px;
+            font-size: 24px;
+        }
+
+        .sidebar ul li a span {
+            display: none;
+
+        }
+
+        .sidebar.active ul li a span {
+            display: block;
+        }
+
+        .wrapper {
+            position: absolute;
+            left: 85px;
+            width: calc(100% - 85px);
+            background-color: rgb(233,233,233);
+            height: 100vh;
+            padding: 20px;
+        }
+
+        .span-active {
+            display: visible;
+        }
+
+        .wrapper .h {
+            color: red;
+            /* display: none; */
+        }
+
+        [data-tab-content] {
+            display: none;
+        }
+
+        .touched[data-tab-content] {
+            display: block;
+        }
+
+        .section.touched a{
+            background-color: #fff;
+            color: rgb(20,20,20);
+            border-radius: 5px;
+        }
+
+        /*dashboard style*/
+        /* #dashboard {
+            display: flex;
+            flex-direction: column;
+            border: 1px solid green;
+        } */
+
+
+
+        #dashboard div.balance {
+            background-color: rgb(150, 150, 150);
+            box-shadow:  -5px 5px 15px #c3c3c3,
+                    5px -5px 15px #fdfdfd;
+            border-radius: 10px;
+            margin: 20px 0;
+            padding: 20px;
+            height: 150px;
+            width: 50%;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            margin: 25px;
+            /* border: 1px solid red; */
+            justify-content: space-between;
+
+        }
+
+        div#dashboard div a {
+            /* border: 1px solid blue; */
+            padding: 20px; 
+
+        }
+
+        div#dashboard div.cc {
+            margin: 100px 170px;
+        }
+
+        .balance p {
+            font-size: 25px;
+
+        }
+
+        .bal-ac {
+            display: flex;
+            width: 100%;
+            /* border: 1px solid black; */
+        }
+
+        .bal-ac2 {
+            display: flex;
+            width: 100%;
+            /* border: 1px solid red; */
+        }
+
+        #dashboard div.balance span {
+            display: flex;
+        }
+
+        /*profile style*/
+
+        #profile div.profile-card form {
+            background-color: var(--wallet-color);
+            border-radius: 10px;
+            box-shadow:  -5px 5px 15px #c3c3c3,
+                    5px -5px 15px #fdfdfd;
+            padding: 20px;
+            margin: 20px 0;
+            display: flex;
+            flex-direction:column;
+
+        }
+
+        .form {
+            padding: 30px 40px;
+        }
+
+        .form-control {
+            margin-bottom: 10px;
+            padding-bottom: 10px;
+            position: relative;
+        }
+
+        .form-control label {
+            display: inline-block;
+            margin-bottom: 5px;
+        }
+
+        .form-control input {
+            border: 2px solid #f0f0f0;
+            border-radius: 5px;
+            display: block;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px;
+            width: 100%;
+
+        }
+
+        /* .form button {
+            background-color: #5022ed;
+            border: 2px solid #5022ed;
+            border-radius: 5px;
+            color: #fff;
+            display: block;
+            font-family: inherit;
+            font-size: 16px;
+            padding: 10px;
+            width: 100%;
+        } */
+
+        #profile  div form.form {
+            margin-top: 20px;
+        }
+
+        #profile div form.form h2 {
+            margin-bottom: 10px;
+        }
+
+        .profile-tag {
+            display: flex;
+            height: auto!important;
+            justify-content: space-between;
+        }
+
+        #form {
+            height: auto;
+            padding: 0;
+            margin: 0;
+        }
+
+        #form h2, #form div.form-control {
+            margin: 0!important;
+            padding: 0!important;
+        }
+
+        #form div.form-control {
+            display: flex;
+            justify-content: space-between;
+            font-weight: bold;s
+        }
+
+        .profile-tag img {
+            border: 2px solid whitesmoke;
+            border-radius: 50%;
+
+        }
+
+        /*mobiles*/
+
+        /* @media screen and (min-width: 1200px) {
+            div#profile {
+                display: flex;
+                flex-direction: column;
+                /* justify-content: center; */
+                /* align-items: center; */
+                /* border: 1px solid red; */
+                /* width: 100%!important;
+                padding: 0!important;
+
+            }
+
+            div#profile form {
+                width: 90%!important;
+                /* border: 1px solid yellow; */
+                /* display: flex!important;
+                
+            }
+
+            
+        /* } */
+
+        #snackbar:not(:last-child) {
+            margin-bottom: 20px
+        }
+
+        #snackbar .outer-container,
+        #snackbar .inner-container {
+            align-self: center
+        }
+
+        #snackbar .outer-container i {
+            font-size: 55px;
+            /* border: 1px solid green; */
+            padding: 0;
+            margin: 0;
+        }
+
+        #snackbar i {
+            color: red;
+            margin: 0;
+        }
+
+        #snackbar .inner-container p:first-child {
+            color: #101020;
+            font-weight: 600;
+            font-size: 16px;
+        }
+
+        #snackbar .inner-container p:last-child {
+            font-size: 12px;
+            font-weight: 400;
+            color: #656565;
+        }
+
+        #snackbar button {
+            align-self: flex-start;
+            background-color: transparent;
+            font-size: 20px;
+            color: #656565;
+            line-height: 0;
+            cursor: pointer;
+            margin-right: -30px;
+            
+        }
+
+        #snackbar {
+            border-left: 3px solid red;
+        }
+
+        /* div {
+            border: 1px solid red;
+        } */
+
+        #snackbar {
+            visibility: hidden;
+            width: 100%;
+            height: auto;
+            margin-top: 5px;
+            padding: 10px;
+            background-color: #ffffff;
+            border-radius: 7px;
+            display: grid;
+            grid-template-columns: 1.3fr 6fr 0.5fr;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.08)
+        }
+
+        #snackbar.show {
+            visibility: visible;
+            -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+            animation: fadein 0.5s, fadeout 0.5s 2.5s;
+        }
+
+        @-webkit-keyframes fadein {
+            from {bottom: 0; opacity: 0;} 
+            to {bottom: 30px; opacity: 1;}
+        }
+
+        @keyframes fadein {
+        from {bottom: 0; opacity: 0;}
+        to {bottom: 30px; opacity: 1;}
+        }
+
+        @-webkit-keyframes fadeout {
+        from {bottom: 30px; opacity: 1;} 
+        to {bottom: 0; opacity: 0;}
+        }
+
+        @keyframes fadeout {
+        from {bottom: 30px; opacity: 1;}
+        to {bottom: 0; opacity: 0;}
+        }
+
+        @media screen and (max-width: 768px) {
+
+
+            .bal-ac {
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                padding: 0px !important;
+                margin: 0;
+                /* border: 1px solid red; */
+            }
+
+            .bal-ac2 div {
+                /* border: 1px solid red; */
+                /* margin-top: 50px; */
+            }
+
+            .bal-ac2 {
+                display: block;
+                padding: 0 !important;
+                margin: 0;
+                width: 100%;
+                /* border: 1px solid green; */
+            }
+
+            .bal-ac2 div {
+                width: 100%;
+            }
+
+            .cc {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .balance {
+                padding: 0;
+                margin-top: 0!important;
+                margin-left: 0!important;
+            }
+
+            .balance p {
+                font-size: 25px;
+                font-weight: bold;
+            }
+
+            #dashboard div .balance {
+                width: 100%;
+                height:auto;
+                margin-top: 20px;
+
+            }
+
+            .dash-tag h1, .dash-tag h2 {
+                font-size: 20px;
+            }
+
+            div.wrapper {
+                height: 100vh;
+                /* width: auto; */
+            }
+
+            .f-up{
+                height: auto;
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                margin-bottom: 0 !important;
+
+            }
+
+            .c-content {
+                height: auto;
+                overflow-y: auto;
+                /* overflow-y :auto; */
+                display: flex;
+                flex-direction: column;
+                width: 100%;
+                margin-bottom: 20px !important;
+            }
+
+            .c-content div {
+                margin-bottom: 10px !important;
+                height: auto;
+                padding: 3px 10px;
+
+            }
+
+            .c-content .e-w, .c-content .us-w {
+                margin-left: 0;
+            }
+
+
+
+            .e {
+                margin-bottom: 0 !important;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            .w {
+                width: 100% !important;
+                height: auto !important;
+                
+
+            }
+
+            .c-content span {
+                margin: 5px !important;
+            }
+
+            .w-history {
+                overflow-x:auto;
+                padding: 10px !important;
+                margin-bottom: 20px!important;
+            }
+
+            .w-history h2 {
+                font-size: 15px;
+                font-weight: bold;
+                color: black;
+
+            }
+
+            .w-history table {
+                padding: 0;
+                margin: 0;
+                
+            }
+
+            .table, tr, th, td, .table-hover {
+                width: 600px !important;
+            }
+
+            .w span, .c-content span {
+                display: flex;
+                letter-spacing: 1.5pt;
+            }
+
+            .f-down {
+                /* border: 1px solid red; */
+                padding: 0 !important;
+                margin: 0 !important;
+                margin-top: 20px !important; 
+            }
+
+            .c-history h2 {
+                font-size: 15px;
+                color: var(--bg-color);
+                margin: 0 !important;
+                padding: 0 !important;
+                font-weight: bold;
+            }
+
+            .c-history table {
+                margin: 0!important;
+                padding: 0;
+            }
+
+            .c-content p {
+            font-size: 20px !important;
+        }
+
+        div #type, #payment {
+            border: 2px solid #f0f0f0;
+            border-radius: 5px;
+            display: block;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px;
+            width: 100%;
+        }
+
+        }
+
+        div#fWallet {
+            margin: 0;
+            padding: 0;
+            /* border: 1px solid yellow; */
+        }
+
+        .f-up {
+            display: flex;
+            /* border: 1px solid red; */
+            justify-content: space-evenly;
+            height: auto;
+            width: 100%;
+            margin-bottom: 50px;
+            
+        }
+
+        .w {
+            /* border: 2px solid green; */
+            width: 30%;
+            height: 200px;
+            border-radius: 10px;
+            background-color: var(--wallet-color);
+            box-shadow:  -5px 5px 15px #c3c3c3,
+                    5px -5px 15px #fdfdfd;
+            color: black;
+            font-weight: bold;
+            padding: 20px;
+            margin-bottom: 10px;
+
+        }
+
+        .w-history, .c-history { 
+            /* border: 2px solid purple; */
+            height: 200px;
+            margin-bottom: 50px;
+            padding: 20px;
+            background-color: var(--main-color);
+            color: whitesmoke;
+            background-color: var(--wallet-color);
+            border-radius: 10px;
+
+        }
+
+        .table {
+            /* border: 2px solid orange; */
+            width: 100%;
+            padding: 20px;
+
+        }
+
+        .table th, td {
+            border: 2px solid whitesmoke;
+            background-color: whitesmoke;
+            color: var(--bg-color);
+            width: auto;
+            text-align: center;
+
+        }
+
+        .f-down {
+            padding: 20px;
+            
+        }
+
+        .w-history small, .c-history small {
+            color: red;
+        }
+
+        .w-history button, .c-history button, .c-content button, button {
+            padding: 9px 25px;
+            background-color: var(--bg-color);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            margin-top: 5px;
+            margin-left: 5px;
+            transition: all 0.3s ease 0s;
+            font-weight: bold;
+        }
+
+        .w-history button:hover, .c-content button:hover {
+            background-color: whitesmoke;
+            color: var(--bg-color);
+        }
+
+        .c-content {
+            /* border: 1px solid blue; */
+            /* padding: 20px; */
+            margin-top: 10px;
+            display: flex;
+            margin-bottom: 20px;
+            justify-content: space-evenly;
+        }
+
+        .c-tag small {
+            border: 1px solid blue;
+            background-color: var(--main-color);
+            box-shadow:  -5px 5px 15px #c3c3c3,
+                    5px -5px 15px #fdfdfd;
+            color: whitesmoke;
+            font-weight: light;
+            font-size: 9px;
+            padding: 0;
+            margin: 0!important;
+
+        }
+
+        .cpr {
+            margin-bottom: 0!important;
+            display: block;
+        }
+
+        .b-w, .e-w, .us-w, .rate, .r-calc {
+            height: auto;
+            /* margin-bottom: 50px; */
+            padding: 20px;
+            background-color: var(--main-color);
+            box-shadow:  -5px 5px 15px #c3c3c3,
+                    5px -5px 15px #fdfdfd;
+            color: vvar(--main-color);
+            font-weight: bold;
+            background-color: var(--wallet-color);
+            border-radius: 10px;
+        }
+
+        /* .c-tag h2 {
+            font-weight: bold;
+
+        } */
+
+        .e-w {
+            margin-left: 10px;
+        }
+
+        .us-w {
+            margin-left: 10px;
+        }
+
+        .c-history {
+            overflow-x:auto;
+        }
+
+        .c-content span {
+            display: flex;
+            margin-top: 20px;
+            margin-top: 20px;
+        }
+
+        .c-content p {
+            font-size: 25px;
+        }
+
+        .rate {
+            /* border: 1px solid green; */
+            margin-bottom: 20px;
+            overflow-x: auto!important;
+            width: 100%;
+            height: auto;
+            
+        }
+
+        .rate table {
+            width: 100%!important;
+            padding: 0;
+            margin: 0;
+            
+        }
+
+        .r-calc {
+            /* border: 2px solid red; */
+            padding: 0!important;
+            /* margin-top: 0px!important; */
+        }
+
+        /* .r-calc form {
+            padding: 10px;
+        } */
+
+        div#contact-us {
+            /* border: 2px red solid; */
+            /* margin: 0!important; */
+        }
+
+        div.down-contact {
+            /* border: 2px solid blue; */
+            padding: 0!important;
+        }
+
+        .down-contact form small {
+            margin-bottom: 50px;
+            padding-top: 4px;
+            margin-top: 0!important;
+            /* border: 1px solid yellow; */
+        }
+
+        textarea {
+            resize: none;
+            width: 100%;
+            border: 2px solid #f0f0f0;
+            border-radius: 5px;
+            display: block;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px;
+            width: 100%;
+        }
+
+        .down-contact form {
+            /* border: 2px purple solid; */
+            padding: 0;
+            font-weight: bold;
+        }
+
+        .down-contact form button {
+            width: 100%;
+            height: 50px;
+        }
+
+        .tooltip {
+            position: relative;
+            display: inline-block;
+        }
+
+        .qr {
+            display: none;
+            
+        }
+
+        .ethqr, .usqr {
+            display: none;
+        }
+
+        .qr img, .ethqr img, .usqr img {
+            width: 150px;
+            height: auto;
+            margin: 10px;
+        }
+
+        .qr input, .ethqr input, .usqr input {
+            border: 2px solid #f0f0f0;
+            border-radius: 5px;
+            display: block;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 5px;
+            width: 100%;
+            font-weight: bold;
+            margin-top: 0px;
+        }
+
+
+        .tooltip .tooltiptext {
+            visibility: hidden;
+            width: 140px;
+            background-color: #555;
+            color: #fff;
+            text-align: center;
+            border-radius: 6px;
+            padding: 5px;
+            position: absolute;
+            z-index: 1;
+            bottom: 150%;
+            left: 50%;
+            margin-left: -75px;
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .real {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .real2 {
+            display: none;
+        }
+
+        .tooltip .tooltiptext::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -5px;
+            border-width: 5px;
+            border-style: solid;
+            border-color: #555 transparent transparent transparent;
+        }
+
+        .tooltip:hover .tooltiptext {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        .tooltip button {
+            margin: 0!important;
+            display: flex;
+        }
+
+
+        @media screen and (max-width: 768px) {
+            .rate {
+                overflow:auto;
+            }
+
+            .rate table {
+                width: 700px!important;
+            }
+
+            .r-calc {
+                overflow-y: auto;
+                height: 50vh;
+            }
+
+
+        }
+
+        a {
+            cursor: pointer;
+        }
+        .r-calc {
+                overflow-y: auto;
+                height: 50vh;
+            }
+
+        div #type, #payment {
+            border: 2px solid #f0f0f0;
+            border-radius: 5px;
+            display: block;
+            font-family: inherit;
+            font-size: 14px;
+            padding: 10px;
+            width: 100%;
+        }
+
+        button#rateButton {
+            width: 100%;
+            height: 50px;
+            font-weight: bold;
+            font-size: 20px;
+        }
+
+        .g {
+            display: block;
+            position: fixed;
+            width: 100%;
+            bottom: 0;
+            margin: 10px !important;
+            /* margin-bottom: -100px!important; */
+            /* border: 1px solid red; */ 
+        }
+
+        .footer2 {
+            display: flex; 
+            justify-content: space-evenly;
+        }
+
+        .g hr {
+            width: 100%;
+
+        }
+        
+        #signOut {
+            /* border: 1px red solid; */
+            text-align: center;
+            font-weight: bold;
+        }
+
+        #signOut button {
+            width: 100%;
+            height: 50px;
+            margin-top: 50px;
+            font-size: 20px;
+        }
+        
+        #profileImage {
+            width: 41px;
+            height: 41px;
+            border-radius: 50%;
+            background: #512DA8;
+            font-size: 30px;
+            color: #fff;
+            text-align: center;
+            /* line-height: 150px; */
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo_content">
+            <div class="logo">
+                <h3 class="logo-name">
+                    <img src="logo.png" alt="" height="40px">
+                </h3>
+            </div>
+            <div class="btn-toggle">
+                <i class="bx bx-menu"></i>
+            </div>
+        </div>
+
+        <ul class="nav">
+            <li data-tab-target="#dashboard" class="touched section">
+                <a href="#">
+                    <i class="bx bxs-dashboard"> </i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li data-tab-target="#profile" class="section">
+                <a href="#">
+                    <i class="bx bxs-user"> </i>
+                    <span>Profile</span>
+                </a>
+            </li>
+            <li data-tab-target="#fWallet" class="section">
+                <a href="#">
+                    <i class="bx bxs-wallet"> </i>
+                    <span>Fiat Wallet</span>
+                </a>
+            </li>
+            <li data-tab-target="#cWallet" class="section">
+                <a href="#">
+                    <i class="bx bxl-bitcoin"> </i>
+                <span>Crypto Wallet</span>
+                </a>
+            </li>
+            <li data-tab-target="#rates" class="section">
+                <a href="#">
+                    <i class="bx bx-transfer-alt"> </i>
+                <span>Rates</span>
+                </a>
+            </li>
+            <li data-tab-target="#analytics" class="section"> 
+                <a href="#">
+                    <i class="bx bxs-analyse"> </i>
+                    <span>Transaction History</span>
+                </a>
+            </li>
+            <li data-tab-target="#contact-us" class="section">
+                <a href="#">
+                    <i class="bx bxs-contact"> </i>
+                    <span>Contact Us</span>
+                </a>
+            </li>
+            <li data-tab-target="#signOut" class="section">
+                <a href="#">
+                    <i class="bx bx-ghost"> </i>
+                    <span>Sign Out</span>
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <div class="wrapper">
+        <div class="popup" id="popup">
+            <img src="cancel_icon.png" alt="">
+            <h2>Error</h2>
+            <p>No Funds yet, Fund your Crypto Wallet!</p>
+            <button type="button" onclick="closePopup()">OK</button>
+        </div>
+        <div class="tab-content" >
+            <div id="dashboard" data-tab-content class="touched">
+                <div class="dash-tag">
+                    <h1>Dashboard</h1>
+                    <h2>Welcome, <%= name%></h2>
+                </div>
+                <div class="bal-ac">
+                    <div class="naira balance section" data-tab-target="#fWallet">
+                        <p>Naira Wallet</p>
+                        <span>&#8358; <p>0.00</p></span>
+                    
+                    </div>
+                    <div class="dollar balance section" data-tab-target="#fWallet">
+                        <p>Dollar Wallet</p>
+                        <span>&#36; <p>0.00</p></span>
+                        
+                    </div>
+                </div>
+                
+                <div class="bal-ac2">
+                    
+                    <div class="euro balance section" data-tab-target="#fWallet">
+                        <p>Euro Wallet</p>
+                        <span>&#128; <p>0.00</p></span>
+                        
+                    </div>
+                    <div class="crypto balance section" data-tab-target="#cWallet">
+                        <p>Crypto Wallet</p>
+                        <span>B <p>0.00</p></span>
+                        
+                        
+                    </div>
+                </div>
+                <div class="cc" data-tab-target="#fWallet" class="section"><a href="#">Click here to go to wallet >></a></div>
+                
+            </div>
+
+            <div id="profile" data-tab-content >
+                <div class="profile-tag">
+                    <h1>Profile</h1>
+                    <div id="profileImage"><%= fullName.substring(0, 1) %></div>
+                </div>
+                <div class="profile-card">
+                    <form action="" class="form" id="form">
+                        <h2>Account Status</h2>
+                        <div class="form-control">
+                            <small style="color: green;" >active</small>
+                            <small>ID: <span>-</span></small>
+                        </div>
+                    </form>
+                    
+                    <form action="" class="form" id="form1">
+                        <h2>User Information</h2>
+                        <div class="form-control">
+                            <label for="">Full Name</label>
+                            <input type="text" name="" value="<%= fullName%>" id="fullName" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="">User Name</label>
+                            <input type="text" name="" value="<%= name%>" id="userName" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="">Email</label>
+                            <input type="email" name="" id="email" value="<%= email%>" disabled>
+                        </div>
+                        <div class="form-control">
+                            <label for="">Contact Number</label>
+                            <input type="text" name="" id="contact" value="<%= contact%>" disabled>
+                        </div>
+                </form>
+                    
+                </div>
+            </div>
+
+            <div id="fWallet" data-tab-content>
+                <h1>Wallet Balance</h1>
+                <div class="f-up">
+                    <div class="n w">
+                        <p>Naira Wallet</p>
+                        <span>&#8358; <p>0.00</p></span>
+                        <div class="cp" onclick="myFunction8()">
+                            <a href="#" ><small >Click here to trade</small></a>
+                        </div>
+                    </div>
+                    <div class="d w">
+                        <p>Dollar Wallet</p>
+                        <span>&#36; <p>0.00</p></span>
+                        <div class="cp" onclick="myFunction8()">
+                            <a href="#" ><small >Click here to trade</small></a>
+                        </div>
+                    </div>
+                    <div class="e w">
+                        <p>Euro Wallet</p>
+                        <span>&#128; <p>0.00</p></span>
+                        <div class="cp" onclick="myFunction8()">
+                            <a href="#" ><small >Click here to trade</small></a>
+                        </div>
+                    </div>
+                </div>
+                <div class="f-down">
+                    <!-- <div class="w-history"> -->
+                        <!-- <h2>Withdraw Request History</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                <th>#</th>
+                                <th>Bank</th>
+                                <th>Account No</th>
+                                <th>Number</th>
+                                <th>Status</th>
+                                <th>Current</th>
+                                <th>Initiated On</th>
+                                <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <small>No Withdrawal yet </small>
+                        <button type="submit">Withdraw</button>
+                    </div> -->
+
+                    <div class="add-bank w-history" >
+                        <h2>My Bank Accounts</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                <th>#</th>
+                                <th>Bank</th>
+                                <th>Account No</th>
+                                <th>Account Name</th>
+                                <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <small>No Bank Added yet </small>
+                        <button type="submit" onclick="openPopup()">Add Bank</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="cWallet"  data-tab-content>
+                <div class="c-tag"><h2>Crypto Wallet</h2><small>The Address and QR barcode are yours. 
+                            You can receive crypto into it. Any crypto
+                            recieved to this address will be automatically 
+                            added to your balance and available for Trade. 
+                            Ensure to use good Network fee when sending crypto
+                            to your wallet.</small></div>
+                <div class="c-content">
+                    <div class="b-w">
+                        
+                        <div class="bit">
+                        <p>Bitcoin Wallet</p>
+                        <span>BTC <p style="margin-left: 10px;">0.00</p></span>
+                            <small>Wallet Address</small>
+                            <button class="btn-qr" onclick="myFunction2()" type="submit">Generate wallet Address</button>
+                            <div class="qr ">
+                                <img src="bitcoinQr.png" alt="QR Code">
+                                <input type="text" value="bc1qm595ym8v74vhfmkxs0rkpcwty53m3nf0nuyfkk" id="myInput" disabled>
+                                <div class="tooltip">
+                                    <button onclick="myFunction()" onmouseout="outFunc()">
+                                        <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>Copy text
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>    
+                    <div class="e-w">
+                            <div class="eth">
+                            <p>Ethereum Wallet</p>
+                        <span>ETH <p style="margin-left: 10px;">0.00</p></span>
+                            <small>Wallet Address</small>
+                            <button class="eth-qr" onclick="myFunction3()" type="submit">Generate wallet Address</button>
+                            <div class="ethqr">
+                                <img src="etheruemQr.png" alt="QR Code">
+                                <input type="text" value="0x160ae8e23168d19003002B638A35C5a135fAEC73" id="myInput" disabled>
+                                <div class="tooltip">
+                                    <button onclick="myFunction()" onmouseout="outFunc()">
+                                        <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>Copy text
+                                    </button>
+                                </div>
+                            </div>
+                            
+                        </div>
+                    </div>    
+                    <div class="us-w">
+                            <div class="usdt">
+                            <p>USDT Wallet</p>
+                        <span>USDT <p style="margin-left: 10px;">0.00</p></span>
+                            <small>Wallet Address</small>
+                            <button class="us-qr" onclick="myFunction1()" type="submit">Generate wallet Address</button>
+                            <div class="usqr">
+                                <img src="usdtQr.png" alt="QR Code">
+                                <input type="text" value="0xbf4db7e75dff4a14051b31e45d1dcd06cc888034" id="myInput" disabled>
+                                <div class="tooltip">
+                                    <button onclick="myFunction()" onmouseout="outFunc()">
+                                        <span class="tooltiptext" id="myTooltip">Copy to clipboard</span>Copy text
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="cpr" onclick="myFunction8()">
+                        <a href="#">Click Here to Trade  Crypto...</a>
+                </div>
+            </div>
+
+            <div id="rates"  data-tab-content >
+                <div class="rate">
+                    <h2>Rate Table</h2>
+                    <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Range(<span>&#36;</span>)</th>
+                                    <th>Rate per USD (&#36;)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>2000 - 4999 </td>
+                                    <td>637</td>
+                                </tr>
+                                <tr>
+                                    <td>2</td>
+                                    <td>5000 - 8999</td>
+                                    <td>670</td>
+                                </tr>
+                                <tr>
+                                    <td>3</td>
+                                    <td>9000 - 14999 </td>
+                                    <td>690</td>
+                                </tr>
+                                <tr>
+                                    <td>4</td>
+                                    <td>15000 - 69999</td>
+                                    <td>713</td>
+                                </tr>
+                                <tr>
+                                    <td>5</td>
+                                    <td>70000 above </td>
+                                    <td>730</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                </div>
+                <div class="r-calc">
+                    <form action="" class="form" id="form1">
+                    <h2>Rate Calculator</h2>
+                    <small>Get the current value for your transactions</small>
+                        <div class="form-control">
+                            <label for="type">Type:</label>
+
+                            <select name="type" id="type">
+                                <option value="bitcoin" selected>Bitcoin</option>
+                                <option value="ethereum" disabled>Ethereum</option>
+                                <option value="usdt" disabled>USDT</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="">Amount in USD (&#36;)</label>
+                            <input type="text" name="" id="amountUSD" value="" placeholder="0.00">
+                        </div>
+                        <div class="form-control">
+                            <label for="payment">Payment Method:</label>
+
+                            <select name="payment" id="payment">
+                                <option value="naira" selected>Naira</option>
+                                <option value="dollar" disabled>Dollar</option>
+                                <option value="euro" disabled>Euro</option>
+                            </select>
+                        </div>
+                        <div class="form-control">
+                            <label for="">Amount in Naira (&#8358;)</label>
+                            <input type="text" name="" id="amountNaira" value="" disabled>
+                        </div>
+                        <button id="rateButton" type="submit" onclick="convert()">Calculate</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="analytics"  data-tab-content >
+                <h1 style="margin-bottom: 10px;">Transaction History</h1>
+                <div class="c-history">
+                        <h2>Cryptocurrency Transaction History</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                <th>#</th>
+                                <th>Type</th>
+                                <th>Total Amount</th>
+                                <th>Confirmation</th>
+                                <th>Status</th>
+                                <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <small>No History yet </small>
+                        <button type="submit" onclick="openPopup()">Trade</button>
+                </div>
+                <div class="w-history">
+                        <h2>Withdraw Request History</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                <th>#</th>
+                                <th>Bank</th>
+                                <th>Account No</th>
+                                <th>Number</th>
+                                <th>Status</th>
+                                <th>Current</th>
+                                <th>Initiated On</th>
+                                <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <small>No Withdrawal yet </small>
+                        <button type="submit" onclick="openPopup()"> Withdraw</button>
+                    </div>
+
+                    <div class="add-bank w-history" >
+                        <h2>My Bank Accounts</h2>
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                <th>#</th>
+                                <th>Bank</th>
+                                <th>Account No</th>
+                                <th>Account Name</th>
+                                <th>Date</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                <td>NIL</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <small>No Bank Added yet </small>
+                        <button type="submit" onclick="openPopup()">Add Bank</button>
+                    </div>
+
+                    
+                </div>
+            </div>
+
+            <div id="contact-us"  data-tab-content>
+                <div class="down-contact">
+                    <form action="" class="form" id="form1">
+                    <h2>Get In Touch</h2>
+                    <small>send us detailed messages</small>
+                        <div class="form-control">
+                            <label for="">Your Name:</label>
+                            <input type="text" name="" id="yName" value="<%= fullName %>" placeholder="Full Name:">
+                        </div>
+                        <div class="form-control">
+                            <label for="">Your Email: </label>
+                            <input type="email" name="" id="yEmail" value="<%= email %>" placeholder="hello@coinners.com">
+                        </div>
+                        <div class="form-control">
+                            <label for="">Subject: </label>
+                            <input type="text" name="" id="sbject" value="" placeholder="Subject of complaint">
+                        </div>
+                        <div class="form-control">
+                            <label for="">Comments </label>
+                            <textarea id="w3review" name="w3review" rows="5" cols="40" placeholder="Type in your complaint here"></textarea>
+                        </div>
+                        <button type="submit">Send Message</button>
+                    </form>
+                </div>
+            </div>
+
+            <div id="signOut"  data-tab-content >
+
+                <h1>Sign Out</h1>
+                <form action="/logout?_method=DELETE" method="POST">
+                    <button type="submit">Log Out</button>
+                </form>
+            </div>
+
+            <!-- <button onclick="myFunction()">Show Snackbar</button> -->
+            <!-- <div id="snackbar">Some text some message..</div> -->
+            <div class="toast success" id="snackbar">
+                <div class="outer-container"> <i class="bx bx-error"></i> </div>
+                <div class="inner-container">
+                <p>Error</p>
+                <p>No Funds to Trade</p>
+                </div> <button>&times;</button>
+            </div>
+
+            <div class="g coinners">
+                <hr>
+                <div class="logo">
+                    <img src="logo3.png" alt="coinnerLogo" width="157px" height="40px">
+                </div>
+                <div>
+                    <p id="uno">2022 &copy; Coinners</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function myFunction8() {
+        var x = document.getElementById("snackbar");
+        x.className = "show";
+        setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+        }
+    </script>
+
+    <script>
+        function convert() {
+            // e.preventDefault();
+
+
+            var dollar = document.querySelector('#amountUSD').value;
+            var Naira = document.querySelector('#amountNaira').value;
+            var result = 0;
+
+            if (Number(dollar) <= 2000) { // if the amount is less than or equal to 2000
+                result = Number(dollar) * 637;
+                document.querySelector('#amountNaira').value = result;
+            } else if (Number(dollar) >= 5000 && Number(dollar) <9000) { // if the amount is greater than or equal to 5000 and less than 9000
+                result = Number(dollar) * 670;
+                document.querySelector('#amountNaira').value = result;
+            } else if (Number(dollar) >= 9000 && Number(dollar) <15000) { // if the amount is greater than or equal to 9000 and less than 15000
+                result = Number(dollar) * 690;
+                document.querySelector('#amountNaira').value = result;
+            } else if (Number(dollar) >= 15000 && Number(dollar) <70000) { // if the amount is greater than or equal to 15000 and less than 70000
+                result = Number(dollar) * 713;
+                document.querySelector('#amountNaira').value = result;
+            } else if (Number(dollar) >= 70000) { // if the amount is greater than or equal to 70000    
+                result = Number(dollar) * 730;
+                document.querySelector('#amountNaira').value = result;
+            } else {
+                alert("Please enter a valid amount");
+            }   // end of if statement
+
+        }
+    </script>
+
+    <script>
+        function myFunction() {
+        var copyText = document.getElementById("myInput");
+        copyText.select();
+        copyText.setSelectionRange(0, 99999);
+        navigator.clipboard.writeText(copyText.value);
+        
+        var tooltip = document.getElementById("myTooltip");
+        tooltip.innerHTML = "Copied";
+        }
+
+        function outFunc() {
+        var tooltip = document.getElementById("myTooltip");
+        tooltip.innerHTML = "click to copy";
+        }
+    </script>
+
+    <script>
+        const btn_toggle = document.querySelector('.btn-toggle');
+        const sidebar = document.querySelector('.sidebar');
+        const logo = document.querySelector('.logo');
+        const wrapper = document.querySelector('.wrapper');
+
+
+        btn_toggle.addEventListener("click", () => {
+            sidebar.classList.toggle("active");
+            if (sidebar.classList.contains("active")) {
+                logo.setAttribute("style", "display:flex");
+                wrapper.setAttribute("style", "left:240px; width:calc(100% - 240px); ");
+                return;
+            }
+            logo.setAttribute("style", "display:none");
+            wrapper.setAttribute("style", "left:85px; width:calc(100% - 85px)");
+        })
+
+        const tabs = document.querySelectorAll('[data-tab-target]');
+        const tabContents = document.querySelectorAll('[data-tab-content]');
+
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                const target = document.querySelector(tab.dataset.tabTarget);
+                tabContents.forEach(tabContent => {
+                    tabContent.classList.remove('touched');
+                });
+                tabs.forEach(tab => {
+                    tab.classList.remove('touched');
+                });
+                tab.classList.add('touched');
+                target.classList.add('touched');
+            });
+        });
+
+
+        function myFunction2() {
+            var qr = document.querySelector('.btn-qr');
+            var qr2 = document.querySelector('.qr');
+            
+            qr.addEventListener("click", () => {
+                qr.classList.toggle("real2");
+                qr2.classList.toggle("real");
+            }   
+            )   // end of qr
+        }
+
+        function myFunction3() {
+            var ethqr = document.querySelector('.eth-qr');
+            var ethqr2 = document.querySelector('.ethqr');
+            
+            ethqr.addEventListener("click", () => {
+                ethqr.classList.toggle("real2");
+                ethqr2.classList.toggle("real");
+            }   
+            )   // end of qr
+        }
+
+        function myFunction1() {
+            var usqr = document.querySelector('.us-qr');
+            var usqr2 = document.querySelector('.usqr');
+            
+            usqr.addEventListener("click", () => {
+                usqr.classList.toggle("real2");
+                usqr2.classList.toggle("real");
+            }   
+            )   // end of qr
+        }
+            
+    </script>
+    <script>
+        let popup = document.getElementById("popup");
+
+        function openPopup() {
+            popup.classList.add("open-popup");
+        }
+
+        function closePopup() {
+            popup.classList.remove("open-popup");
+        }
+    </script>
+
+</body>
+</html> 
